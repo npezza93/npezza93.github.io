@@ -28,6 +28,7 @@ page '/*.txt', layout: false
 helpers do
   def projects
     {
+      wnw: "Working Not Working",
       n2: "N2 Publishing",
       archipelago: "Archipelago",
       github: "Open Source Contributions",
