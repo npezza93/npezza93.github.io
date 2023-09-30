@@ -36,14 +36,6 @@ helpers do
       spoonflower: "Spoonflower",
     }
   end
-
-  def email_url
-    "https://portfoliomailserver.herokuapp.com/emails"
-  end
-
-  def site_key
-    "2f00edd2-c2df-4e3d-90ed-32d608438f64"
-  end
 end
 
 # Build-specific configuration

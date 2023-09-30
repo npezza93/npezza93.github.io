@@ -3,31 +3,22 @@
     %h1.upcase
       %span.slash #
       contact
-    = form_for Email.new, email_url, method: "POST" do |f|
-      = f.text_field :name, placeholder: "Your Name", required: true
+    = form_for Email.new, "mailto:pezza@hey.com", enctype: "text/plain", method: "GET" do |f|
+      = f.hidden_field :subject, value: "Hello, Nick!", name: :subject
+
+      = f.text_field :subject, placeholder: "Your Name", required: true, name: :subject
+
       .input-border
-      = f.email_field :email, placeholder: "Your Email", required: true
+      = f.email_field :email, placeholder: "Your Email", required: true, name: :email
       .input-border
       .grow-wrap
-        %textarea{ id: "email_msg", placeholder: "Your Message", name: "email[message]", required: true, data: { min: { rows: 2 } } }
+        %textarea{ id: "email_msg", placeholder: "Your Message", name: "body", required: true, data: { min: { rows: 2 } } }
         .input-border
-      %p.recaptcha-disclosure
-        This site is protected by hCaptcha and its
-        = link_to "Privacy Policy", "https://hcaptcha.com/privacy"
-        and
-        = link_to "Terms of Service", "https://hcaptcha.com/terms"
-        apply.
 
-      %button.h-captcha{ type: :submit, class: "submit", "aria-label" => "Contact", data: { sitekey: site_key, callback: "onSubmit" } }
+      %button{ type: :submit, class: "submit", "aria-label" => "Contact" }
         %i.far.fa-paper-plane
     .social
       = link_to "https://github.com/npezza93", class: "social-container" do
         %i.fab.fa-github
       = link_to "https://www.linkedin.com/in/nick-pezza-02166668", class: "social-container" do
         %i.fab.fa-linkedin-in
-
-:javascript
-  var onSubmit = function(token) {
-    document.querySelector("form").submit();
-    document.querySelector('#notice').classList.add('active');
-  };
