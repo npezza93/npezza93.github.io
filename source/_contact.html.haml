@@ -3,7 +3,7 @@
     %h1.upcase
       %span.slash #
       contact
-    = form_for Email.new, "mailto:pezza@hey.com", enctype: "text/plain", method: "GET" do |f|
+    = form_for Email.new, "mailto:hi@pezza.co", enctype: "text/plain", method: "GET" do |f|
       = f.hidden_field :subject, value: "Hello, Nick!", name: :subject
 
       = f.text_field :subject, placeholder: "Your Name", required: true, name: :subject
