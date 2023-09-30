@@ -10,13 +10,13 @@
           - projects.each do |project, _title|
             .slide{ id: project, data: { for: project } }
               .content
-                .img{ style: "background-image: url('images/#{project}.svg');" }
+                .img{ style: "background-image: url('#{asset_url("images/#{project}.svg")}');" }
           = partial "projects/resume"
 
 - projects.each do |project, title|
   .project.content.open-transition.invisible{ data: { project: project } }
     = partial "images/chevron_left"
-    .invisible.img{ style: "background-image: url('images/#{project}.svg');" }
+    .invisible.img{ style: "background-image: url('#{asset_url("images/#{project}.svg")}');" }
     %h1.project-name.invisible= title
     %hr.invisible
     .text.invisible= partial "projects/#{project}"
