@@ -11,7 +11,6 @@
 <link href="/stylesheets/normalize-9b97b579.css" rel="stylesheet" async="true" /><link href="/stylesheets/site-d1659e31.css" rel="stylesheet" async="true" />
 <link href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" rel="stylesheet" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous" async="true" />
 <script src="/javascripts/index-24af6c4e.js" type="module" async="true"></script>
-<script async defer src='https://hcaptcha.com/1/api.js'></script>
 </head>
 <body class='index'>
 <header>
@@ -342,22 +341,16 @@ and Rust.</li>
 <span class='slash'>#</span>
 contact
 </h1>
-<form action="https://portfoliomailserver.herokuapp.com/emails" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" /><input type="text" name="email[name]" id="email_name" placeholder="Your Name" required="required" />
+<form action="mailto:pezza@hey.com" accept-charset="UTF-8" enctype="text/plain" method="GET"><input type="hidden" name="subject" value="Hello, Nick!" id="email_subject" />
+<input type="text" name="subject" value="" id="email_subject" placeholder="Your Name" required="required" />
 <div class='input-border'></div>
-<input type="email" name="email[email]" id="email_email" placeholder="Your Email" required="required" />
+<input type="email" name="email" id="email_email" placeholder="Your Email" required="required" />
 <div class='input-border'></div>
 <div class='grow-wrap'>
-<textarea data-min-rows='2' id='email_msg' name='email[message]' placeholder='Your Message' required></textarea>
+<textarea data-min-rows='2' id='email_msg' name='body' placeholder='Your Message' required></textarea>
 <div class='input-border'></div>
 </div>
-<p class='recaptcha-disclosure'>
-This site is protected by hCaptcha and its
-<a href="https://hcaptcha.com/privacy">Privacy Policy</a>
-and
-<a href="https://hcaptcha.com/terms">Terms of Service</a>
-apply.
-</p>
-<button aria-label='Contact' class='h-captcha submit' data-callback='onSubmit' data-sitekey='2f00edd2-c2df-4e3d-90ed-32d608438f64' type='submit'>
+<button aria-label='Contact' class='submit' type='submit'>
 <i class='far fa-paper-plane'></i>
 </button>
 </form><div class='social'>
@@ -366,12 +359,6 @@ apply.
 </a></div>
 </div>
 </div>
-<script>
-  var onSubmit = function(token) {
-    document.querySelector("form").submit();
-    document.querySelector('#notice').classList.add('active');
-  };
-</script>
 
 <div id='notice'>Contact email delivered successfully</div>
 
