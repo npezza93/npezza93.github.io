@@ -2,12 +2,12 @@
   "name": "Nick Pezza",
   "icons": [
     {
-      "src": "/source/images/profile.jpg",
+      "src": "/source/images/profile.webp",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/source/images/profile.jpg",
+      "src": "/source/images/profile.webp",
       "type": "image/png",
       "sizes": "512x512"
     }

@@ -4,3 +4,5 @@
 - Reviewed, merged, tested, and deployed code changes for a Rails 6 API and a Rails 3 application.
 - Investigated and resolved bug tickets from customers for a Rails 6 API and a Rails 3 application.
 - Performed technical phone screenings for prospective candidates.
+
+[Website](https://spoonflower.com)

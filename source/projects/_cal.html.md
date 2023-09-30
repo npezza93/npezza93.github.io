@@ -13,5 +13,4 @@ Students can also filter courses based on times they cannot attend class. After 
 The Calu Advisor is a responsive web application built on Rails, and [Material Design Components](https://github.com/material-components/material-components-web), with a PostgreSQL database.
 
 
-[Url](https://calu-advisor.herokuapp.com)
 [GitHub](https://github.com/npezza93/calu_class_scheduler)
