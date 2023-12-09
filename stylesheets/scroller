@@ -1,6 +1,7 @@
 .mdc-tab-scroller {
   overflow-y: hidden;
-  scrollbar-width: none; }
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent, white 8px calc(100% - 8px), transparent); }
   @media (max-width: 450px) {
     .mdc-tab-scroller {
       margin-left: -30px;
@@ -20,6 +21,11 @@
 
 .mdc-tab-scroller__scroll-content {
   position: relative;
-  display: flex;
-  flex: 1 0 auto;
-  transform: none; }
+  transform: none;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; }
+  .mdc-tab-scroller__scroll-content::-webkit-scrollbar {
+    display: none; }
+  .mdc-tab-scroller__scroll-content .slide {
+    scroll-snap-align: center;
+    scroll-snap-stop: always; }

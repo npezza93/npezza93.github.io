@@ -1,12 +1,3 @@
-document.querySelector('.mdc-tab-scroller').addEventListener('wheel', function(e) {
-  if (e.deltaY != 0) {
-    this.scrollLeft -= (e.wheelDelta );
-    if (this.scrollLeft !== 0 && this.scrollLeft !== (this.scrollWidth - this.clientWidth)) {
-      e.preventDefault();
-    }
-  }
-});
-
 document.querySelectorAll('.slide').forEach((slide) => {
   slide.addEventListener('click', () => {
     if (document.querySelector('.content.active')) {
