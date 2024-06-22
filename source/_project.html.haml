@@ -1,0 +1,7 @@
+.project.active.content(style="flex-direction: column;align-items: center; display: flex;")
+  %a(href="/#projects" style="position: absolute; left: 10px; z-index: 11;")
+    = partial "images/chevron_left"
+  = image_tag "images/#{project}.svg", style: "view-transition-name: #{project};height:310px;width: 400px;aspect-ratio:400/310"
+  %h1.project-name= title
+  %hr
+  .text= partial "projects/#{project}"

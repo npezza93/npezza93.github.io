@@ -1,0 +1,2 @@
+- projects.slice(:n2).to_a.first.tap do |project, title|
+  = partial "project", locals: { project:, title: }

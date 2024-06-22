@@ -1,0 +1,2 @@
+- projects.slice(:cal).to_a.first.tap do |project, title|
+  = partial "project", locals: { project:, title: }

@@ -88,7 +88,6 @@
           background-repeat: no-repeat
           background-size: contain
           background-position: center center
-          transition: all .4s ease
           width: 400px
           height: 310px
           cursor: pointer
@@ -96,15 +95,11 @@
             width: 300px
             height: 275px
         .content
-          position: absolute
-          top: 0
-          left: 0
           width: 400px
           height: 310px
           background: #F7F7F7
           overflow-y: hidden
           overflow-x: hidden
-          transition: width .4s ease-in-out, height .4s ease-in-out
           @media (max-width: 450px)
             width: 300px
             height: 288px
@@ -121,32 +116,17 @@
               margin-left: auto
               margin-right: auto
               cursor: default
-          &.open-transition
-            .text, h1.project-name, hr, svg.close-project-desc
-              transition: opacity .2s ease-in-out .2s, visibility .2s ease-in-out .2s
-          &.close-transition
-            .text, h1.project-name, hr, svg.close-project-desc
-              transition: opacity .2s ease-in-out, visibility .2s ease-in-out
           &.fade-out
             .text, h1.project-name, hr, svg.close-project-desc
               visibility: hidden !important
               opacity: 0 !important
 
 .project.content
-  position: absolute
-  top: 0
-  left: 0
-  width: 400px
-  height: 320px
   background: #F7F7F7
-  overflow-y: hidden
-  overflow-x: hidden
-  transition: width .4s ease-in-out, height .4s ease-in-out
   .img
     background-repeat: no-repeat
     background-size: contain
     background-position: center center
-    transition: all .4s ease
     width: 400px
     height: 310px
     cursor: pointer
@@ -157,8 +137,8 @@
     width: 300px
     height: 288px
   &.active
-    width: 100vw
-    height: 100vh
+    width: 100%
+    height: 100%
     z-index: 11
     .text, h1.project-name, hr, svg.close-project-desc
       visibility: visible
@@ -169,16 +149,6 @@
       margin-left: auto
       margin-right: auto
       cursor: default
-  &.open-transition
-    .text, h1.project-name, hr, svg.close-project-desc
-      transition: opacity .2s ease-in-out .2s, visibility .2s ease-in-out .2s
-  &.close-transition
-    .text, h1.project-name, hr, svg.close-project-desc
-      transition: opacity .2s ease-in-out, visibility .2s ease-in-out
-  &.fade-out
-    .text, h1.project-name, hr, svg.close-project-desc
-      visibility: hidden !important
-      opacity: 0 !important
   .text, h1.project-name, hr, svg.close-project-desc
     visibility: visible
     opacity: 0

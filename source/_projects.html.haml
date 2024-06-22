@@ -8,15 +8,6 @@
       .mdc-tab-scroller__scroll-area
         .mdc-tab-scroller__scroll-content.container
           - projects.each do |project, _title|
-            .slide{ id: project, data: { for: project } }
-              .content
-                .img{ style: "background-image: url('#{asset_url("images/#{project}.svg")}');" }
+            %a.slide(href="/#{project}.html")
+              = image_tag "images/#{project}.svg", style: "view-transition-name: #{project};height:100%;width: 100%;aspect-ratio:400/310"
           = partial "projects/resume"
-
-- projects.each do |project, title|
-  .project.content.open-transition.invisible{ data: { project: project } }
-    = partial "images/chevron_left"
-    .invisible.img{ style: "background-image: url('#{asset_url("images/#{project}.svg")}');" }
-    %h1.project-name.invisible= title
-    %hr.invisible
-    .text.invisible= partial "projects/#{project}"
