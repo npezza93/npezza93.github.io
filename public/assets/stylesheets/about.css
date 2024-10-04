@@ -1,0 +1,55 @@
+#about {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+  min-height: 100vh;
+  position: relative;
+  max-width: 575px;
+  margin: auto;
+  padding: 0px 30px 0px 30px;
+
+  @media (max-width: 450px) {
+    padding-top: 100px;
+  }
+  @media (max-height: 650px) {
+    padding-top: 100px;
+  }
+  h1 {
+    letter-spacing: 2px;
+    line-height: 1.25;
+    b {
+      font-weight: 500;
+    }
+  }
+  hr {
+    border: 0;
+    border-bottom: 1px solid #c6c6c6;
+    width: 100px;
+  }
+  .profile {
+    background-image: url('../images/profile.webp');
+    width: 175px;
+    height: 175px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 50%;
+    background-position: center;
+  }
+  p {
+    font-feature-settings: "calt" 1;
+    margin-bottom: 70px;
+    margin-top: 30px;
+    line-height: 1.35;
+    letter-spacing: 0.5px;
+    font-family: Inter;
+    font-size: 17px;
+    font-weight: 300;
+
+    a {
+      color: #212121;
+      font-weight: 500;
+      text-decoration: underline;
+    }
+  }
+}

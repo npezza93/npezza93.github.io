@@ -1,0 +1,35 @@
+<!--# set var="classes" value="cal" -->
+
+<!--# include file="/_includes/header.html" -->
+
+<div class="project active content" style="flex-direction: column;align-items: center; display: flex;">
+  <!--# include file="/_includes/back.html" -->
+
+  <img src="/assets/images/cal.svg" style="view-transition-name: cal;height:310px;width: 400px;aspect-ratio:400/310" alt="">
+
+  <h1 class="project-name">California University of PA Class Advisor</h1>
+
+  <hr>
+
+  <div class="text">
+    <p>At CalU there were two systems in place that helped students build their schedule for the upcoming semester. The first of the systems is the Vulcan Information Portal(VIP); here students submit the classes they want to enroll in, the student's prerequisites are validated, and all the courses that are available for the upcoming semester are viewable. The second system is DegreeWorks which tells the student all the classes that are needed to fulfill their major and minor(s).</p>
+
+    <p>These two systems should have been communicating, but were not. Instead, every student had to set up a meeting with their faculty advisor before every semester to go over what courses to enroll in for the next semester. In these, students and advisors have to go back and forth between these systems to develop a schedule which is time-consuming and a hassle for everyone involved.</p>
+
+    <p>The CalU Advisor combines these two systems. Before every semester a faculty advisor uploads all the courses offered for the upcoming semester(CSV file) and the student uploads their current transcript from DegreeWorks. The CalU Advisor then gives the student only classes that:</p>
+
+    <ul>
+      <li>are offered;</li>
+      <li>fulfill a requirement in their major or minor(s); and</li>
+      <li>meets all prerequisites.</li>
+    </ul>
+
+    <p>Students can also filter courses based on times they cannot attend class. After building their schedule, they automatically submit it to their advisor and, without setting up a meeting, their advisor can approve it.</p>
+
+    <p>The Calu Advisor is a responsive web application built on Rails, and <a href="https://github.com/material-components/material-components-web">Material Design Components</a>, with a PostgreSQL database.</p>
+
+    <p><a href="https://github.com/npezza93/calu_class_scheduler">GitHub</a></p>
+  </div>
+</div>
+
+<!--# include file="/_includes/footer.html" -->

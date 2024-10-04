@@ -1,0 +1,17 @@
+service: portfolio
+image: npezza/portfolio
+
+servers:
+  - 5.161.249.108
+
+env:
+  secret:
+    - GIT_URL
+
+registry:
+  username: npezza
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64

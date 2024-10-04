@@ -1,0 +1,206 @@
+#projects {
+  padding: 0px 30px;
+  position: relative; }
+  #projects #n2 li {
+    margin: 16px 0; }
+  #projects #resume {
+    position: relative;
+    font-size: 2em;
+    font-weight: 200;
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+    view-transition-name: resume;
+    height: 100%;
+    aspect-ratio: 400/310; }
+    #projects #resume span {
+      z-index: 2;
+      position: absolute;
+      top: 45%;
+      left: 35%; }
+    #projects #resume svg {
+      position: absolute;
+      width: 200px;
+      height: 100%;
+      left: 100px;
+      z-index: 0; }
+      #projects #resume svg g {
+        transition: all 250ms linear;
+        fill: #e5e5e5; }
+    #projects #resume:hover g {
+      fill: #f0f0f0; }
+  #projects .skew {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    min-height: 600px; }
+    #projects .skew:before {
+      content: '';
+      z-index: -1;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: #F7F7F7;
+      transform-origin: top right;
+      -webkit-transform: skewY(-8deg);
+      -moz-transform: skewY(-8deg);
+      -ms-transform: skewY(-8deg);
+      -o-transform: skewY(-8deg);
+      transform: skewY(-8deg);
+      -webkit-backface-visibility: hidden; }
+    #projects .skew .header-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center; }
+    #projects .skew h1.section-header {
+      width: 950px;
+      max-width: 90%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center; }
+      #projects .skew h1.section-header .slash {
+        margin-right: 10px; }
+    #projects .skew .container {
+      margin-top: 45px;
+      max-height: 400px;
+      height: 320px;
+      white-space: nowrap;
+      overflow-y: hidden;
+      -ms-overflow-style: none; }
+      #projects .skew .container .slide {
+        width: 400px;
+        display: inline-block;
+        position: relative; }
+        @media (max-width: 450px) {
+          #projects .skew .container .slide {
+            width: 300px; } }
+        #projects .skew .container .slide .img {
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center center;
+          width: 400px;
+          height: 310px;
+          cursor: pointer; }
+          @media (max-width: 450px) {
+            #projects .skew .container .slide .img {
+              width: 300px;
+              height: 275px; } }
+        #projects .skew .container .slide .content {
+          width: 400px;
+          height: 310px;
+          background: #F7F7F7;
+          overflow-y: hidden;
+          overflow-x: hidden; }
+          @media (max-width: 450px) {
+            #projects .skew .container .slide .content {
+              width: 300px;
+              height: 288px; } }
+          #projects .skew .container .slide .content.active {
+            width: 100vw;
+            height: 100vh;
+            z-index: 11; }
+            #projects .skew .container .slide .content.active .text, #projects .skew .container .slide .content.active h1.project-name, #projects .skew .container .slide .content.active hr, #projects .skew .container .slide .content.active svg.close-project-desc {
+              visibility: visible;
+              opacity: 1; }
+            #projects .skew .container .slide .content.active .img {
+              width: 100%;
+              max-width: 1000px;
+              margin-left: auto;
+              margin-right: auto;
+              cursor: default; }
+          #projects .skew .container .slide .content.fade-out .text, #projects .skew .container .slide .content.fade-out h1.project-name, #projects .skew .container .slide .content.fade-out hr, #projects .skew .container .slide .content.fade-out svg.close-project-desc {
+            visibility: hidden !important;
+            opacity: 0 !important; }
+
+.project.content {
+  background: #F7F7F7; }
+  .project.content .img {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    width: 400px;
+    height: 310px;
+    cursor: pointer; }
+    @media (max-width: 450px) {
+      .project.content .img {
+        width: 300px;
+        height: 275px; } }
+  @media (max-width: 450px) {
+    .project.content {
+      width: 300px;
+      height: 288px; } }
+  .project.content.active {
+    width: 100%;
+    height: 100%;
+    z-index: 11; }
+    .project.content.active .text, .project.content.active h1.project-name, .project.content.active hr, .project.content.active svg.close-project-desc {
+      visibility: visible;
+      opacity: 1; }
+    .project.content.active .img {
+      width: 100%;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+      cursor: default; }
+  .project.content .text, .project.content h1.project-name, .project.content hr, .project.content svg.close-project-desc {
+    visibility: visible;
+    opacity: 0; }
+  .project.content .text {
+    padding-bottom: 40px;
+    max-width: 600px;
+    white-space: normal;
+    margin: auto;
+    font-family: Inter; }
+    .project.content .text ul {
+      max-width: 550px;
+      margin: auto;
+      padding-right: 20px;
+      padding-left: 55px;
+      line-height: 1.35;
+      font-size: 17px;
+      font-weight: 300; }
+      .project.content .text ul ul {
+        padding-left: 20px;
+        list-style-type: none;
+        margin: 15px 0; }
+    .project.content .text p {
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 20px;
+      padding-right: 20px;
+      line-height: 1.35;
+      font-size: 17px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      max-width: 550px;
+      text-indent: 25px; }
+    .project.content .text a {
+      color: #212121;
+      font-weight: 500;
+      text-decoration: underline; }
+  .project.content hr {
+    text-align: center;
+    border: 0;
+    border-bottom: 1px solid #c6c6c6;
+    width: 100px;
+    margin-bottom: 35px; }
+  .project.content h1.project-name {
+    text-align: center;
+    white-space: normal;
+    letter-spacing: 2px;
+    font-weight: 400;
+    font-family: Inter; }
+  .project.content svg.close-project-desc {
+    position: absolute;
+    left: 0;
+    font-size: 23px;
+    color: #fff;
+    left: 15px;
+    top: 35px;
+    cursor: pointer;
+    width: 11px; }

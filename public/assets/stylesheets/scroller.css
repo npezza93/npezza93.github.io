@@ -1,0 +1,45 @@
+.mdc-tab-scroller {
+  overflow-y: hidden;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent, white 8px calc(100% - 8px), transparent);
+
+  @media (max-width: 450px) {
+    margin-left: -30px;
+    margin-right: -30px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 1px;
+    height: 1px;
+  }
+
+  &::-webkit-scrollbar-button {
+    width: 1px;
+    height: 1px;
+  }
+}
+
+.mdc-tab-scroller__scroll-area {
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mdc-tab-scroller__scroll-content {
+  position: relative;
+  transform: none;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slide {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+}

@@ -1,0 +1,119 @@
+.grecaptcha-badge {
+  opacity: 0; }
+
+#contact {
+  margin: auto;
+  margin-top: 20%;
+  padding: 0px 30px;
+  max-width: 950px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 600px; }
+  #contact .recaptcha-disclosure {
+    font-feature-settings: "calt" 1;
+    line-height: 1.35;
+    letter-spacing: 0.5px;
+    font-family: Inter;
+    font-size: 12px;
+    font-weight: 300; }
+    #contact .recaptcha-disclosure a {
+      color: #212121;
+      font-weight: 500;
+      text-decoration: underline; }
+  #contact h1 {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center; }
+    #contact h1 .slash {
+      margin-right: 10px; }
+  #contact form {
+    padding: 0 30px;
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding-bottom: 35px;
+    position: relative;
+    max-width: 550px;
+    margin: auto;
+    margin-top: 95px; }
+    #contact form input {
+      width: 100%;
+      margin-top: 30px;
+      border: none;
+      border-bottom: 1px solid #cbcbcb;
+      padding: 0px;
+      padding-bottom: 5px;
+      outline: none;
+      font-weight: 400;
+      transition: transform 250ms ease-in-out;
+      font-family: Inter; }
+    #contact form .input-border:after {
+      display: block;
+      content: '';
+      border-bottom: solid 1px #cbcbcb;
+      transform: scaleX(0);
+      transition: transform 250ms ease-in-out;
+      transform-origin: 0% 50%; }
+    #contact form input:focus + .input-border:after, #contact form textarea:focus + .input-border:after {
+      transform: scaleX(1); }
+    #contact form .grow-wrap {
+      display: grid;
+      margin-top: 30px;
+      padding: 0px;
+      padding-bottom: 5px; }
+      #contact form .grow-wrap::after {
+        content: attr(data-replicated-value) " ";
+        white-space: pre-wrap;
+        visibility: hidden;
+        grid-area: 1 / 1 / 2 / 2; }
+      #contact form .grow-wrap textarea {
+        grid-area: 1 / 1 / 2 / 2;
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #cbcbcb;
+        outline: none;
+        font-weight: 400;
+        transition: transform 250ms ease-in-out;
+        resize: none;
+        font-family: Inter;
+        overflow: hidden; }
+    #contact form .submit {
+      width: 50px;
+      height: 50px;
+      background: #212121;
+      border-radius: 50%;
+      position: absolute;
+      bottom: -25px;
+      right: 25px;
+      border: none;
+      cursor: pointer; }
+      #contact form .submit i {
+        color: #fff;
+        position: absolute;
+        left: 13px;
+        top: 13px;
+        font-size: 20px; }
+  #contact .social {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center; }
+    #contact .social .social-container {
+      width: 40px;
+      height: 40px;
+      background: #D1D1D0;
+      border-radius: 50%;
+      position: relative;
+      margin: 0 10px; }
+      #contact .social .social-container i {
+        position: absolute;
+        color: #fff; }
+        #contact .social .social-container i.fa-github {
+          font-size: 28px;
+          top: 6px;
+          left: 6px; }
+        #contact .social .social-container i.fa-linkedin-in {
+          font-size: 25px;
+          top: 7px;
+          left: 10px; }

@@ -1,0 +1,104 @@
+#hamburger {
+  width: 15px;
+  height: 12px;
+  margin-left: 30px;
+  cursor: pointer;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed; }
+  @media (max-width: 600px) {
+    #hamburger {
+      display: flex; } }
+  #hamburger div {
+    height: 1px;
+    background: #212121;
+    border-radius: 3px; }
+
+#hamburger-menu {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  top: -250px;
+  z-index: 10001;
+  transition: all 400ms ease;
+  display: none; }
+  @media (max-width: 600px) {
+    #hamburger-menu {
+      display: block; } }
+  #hamburger-menu svg {
+    width: 10px;
+    position: absolute;
+    visibility: visible;
+    right: 50px;
+    top: 25px;
+    cursor: pointer;
+    z-index: 10003;
+    transform: rotate(90deg); }
+  #hamburger-menu.active {
+    top: 0px; }
+    #hamburger-menu.active:before {
+      top: -100px; }
+  #hamburger-menu:before {
+    content: '';
+    height: 400px;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: -450px;
+    background-color: #F7F7F7;
+    -webkit-transform: skewY(-8deg);
+    -moz-transform: skewY(-8deg);
+    -ms-transform: skewY(-8deg);
+    -o-transform: skewY(-8deg);
+    transform: skewY(-8deg);
+    -webkit-backface-visibility: hidden;
+    transition: all 350ms ease; }
+  #hamburger-menu ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    margin: 0;
+    padding: 0;
+    z-index: 10002;
+    position: relative; }
+    #hamburger-menu ul li {
+      padding-top: 15px;
+      padding-bottom: 15px; }
+      #hamburger-menu ul li a {
+        text-decoration: none;
+        color: #212121;
+        font-size: 17px;
+        font-weight: 300; }
+
+#backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: -2;
+  overflow: none;
+  opacity: 0;
+  transition: all 350ms ease;
+  display: none; }
+  @media (max-width: 600px) {
+    #backdrop {
+      display: block; } }
+  #backdrop.active {
+    z-index: 10000;
+    opacity: 1; }
+
+#hire-me {
+  padding: 8px 25px;
+  background: #212121;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-right: 30px; }
