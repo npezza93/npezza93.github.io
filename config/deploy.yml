@@ -9,12 +9,12 @@ env:
     - GIT_URL
 
 registry:
-  username: npezza
-  password:
-    - KAMAL_REGISTRY_PASSWORD
+  server: "localhost:5555"
 
 builder:
   arch: amd64
 
 proxy:
+  ssl: true
   host: pezza.co
+  forward_headers: true
