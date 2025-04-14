@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicholas Pezza - Senior Software Engineer</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+      @theme {
+        --color-resume-blue: rgb(31, 101, 245);
+        --color-resume-blue-light: rgb(76, 136, 246);
+        --color-resume-bg: rgb(241, 243, 245);
+        --color-resume-gray-text: rgb(135, 135, 135);
+
+        --font-sans: 'Inter var', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        --font-poppins: 'Poppins', 'sans-serif';
+      }
+
+      body {
+        @apply font-sans text-sm antialiased; /* Default font and size based on analysis */
+      }
+
+      @media print {
+        body {
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+        .pdf-page {
+          @apply shadow-none border border-transparent; /* Remove shadow for print */
+          page-break-after: always; /* Ensure pages break correctly */
+        }
+        .pdf-page:last-child {
+          page-break-after: auto;
+        }
+        .no-break-inside {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-200 p-4 md:p-8">
+    <div id="pdfResume" class="max-w-6xl mx-auto font-sans text-black">
+      <div class="pdf-page bg-resume-bg mb-4 p-8 md:p-11 overflow-hidden shadow-lg relative">
+        <div class="absolute top-[-11px] left-[-1px] text-[220px] font-poppins font-bold text-resume-blue-light opacity-10 leading-[0.9] z-0 pointer-events-none select-none">
+          N<br>P
+        </div>
+
+        <header class="flex justify-between items-start mb-7 relative z-10">
+          <div class="z-10">
+            <h1 class="font-poppins text-4xl font-bold text-resume-blue leading-tight">Nicholas Pezza</h1>
+            <div class="flex items-center mt-1">
+              <div class="h-[3px] w-[60px] bg-resume-blue mr-2"></div>
+              <div class="font-poppins text-lg text-resume-blue leading-tight">Senior Software Engineer</div>
+            </div>
+          </div>
+          <div class="font-poppins text-base text-resume-blue pt-[2px] pl-[50px]">
+            <a href="https://pezza.co" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-blue hover:text-resume-blue-light">pezza.co</a>
+          </div>
+        </header>
+
+        <div class="pdf-page-container flex flex-col md:flex-row gap-x-8 relative z-10">
+          <div class="pdf-page-column w-full md:w-1/4 pr-0 md:pr-4 order-1">
+            <section class="mb-6 no-break-inside">
+              <div class="flex items-center mb-2.5">
+                <div class="h-[3px] w-5 bg-resume-blue mr-2"></div>
+                <h2 class="font-poppins font-bold text-resume-blue text-base">Contact Info</h2>
+              </div>
+              <ul class="list-none p-0 m-0">
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Angier, NC</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1"><a href="https://github.com/npezza93" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-gray-text hover:text-resume-blue break-words">github.com/npezza93</a></li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">pezza@hey.com</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal">410-596-1940</li>
+              </ul>
+            </section>
+
+            <section class="mb-6 no-break-inside">
+              <div class="flex items-center mb-2.5">
+                <div class="h-[3px] w-5 bg-resume-blue mr-2"></div>
+                <h2 class="font-poppins font-bold text-resume-blue text-base">Open Source</h2>
+              </div>
+              <div class="mb-4">
+                <div class="font-poppins text-sm font-bold text-black leading-normal">Solid Cable</div>
+                <div class="font-poppins text-sm text-resume-gray-text leading-normal whitespace-pre-wrap">Created and maintain Solid Cable, a database-backed Action Cable adapter. Promoted to the Rails GitHub organization and new the default Action Cable adapter in Rails 8.</div>
+              </div>
+              <div class="mb-4">
+                <div class="font-poppins text-sm font-bold text-black leading-normal">ActiveInsights & ActiveError</div>
+                <div class="font-poppins text-sm text-resume-gray-text leading-normal whitespace-pre-wrap">Developed two Rails engines: ActiveInsights tracks response times and RPM within Rails applications without relying on third-party services, and ActiveError monitors and logs errors natively within Rails apps.(GitHub: npezza93/activeinsights, npezza93/activeerror)</div>
+              </div>
+              <div class="mb-4">
+                <div class="font-poppins text-sm font-bold text-black leading-normal">RediSearch Gem</div>
+                <div class="font-poppins text-sm text-resume-gray-text leading-normal whitespace-pre-wrap">Created a Ruby gem to interface with Redis’ RediSearch module, offering seamless integration with Ruby on Rails applications. (GitHub: npezza93/redi_search)</div>
+              </div>
+              <div class="mb-4">
+                <div class="font-poppins text-sm font-bold text-black leading-normal">ttags</div>
+                <div class="font-poppins text-sm text-resume-gray-text leading-normal whitespace-pre-wrap">A CLI tool written in Rust to generate ctags using Tree-sitter queries to create more accurate ctags. (GitHub: npezza93/ttags)</div>
+              </div>
+            </section>
+
+            <section class="mb-6 no-break-inside">
+              <div class="flex items-center mb-2.5">
+                <div class="h-[3px] w-5 bg-resume-blue mr-2"></div>
+                <h2 class="font-poppins font-bold text-resume-blue text-base">Languages & Frameworks</h2>
+              </div>
+              <ul class="list-none p-0 m-0">
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Ruby</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Ruby on Rails</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Hotwire(Turbo & Stimulus)</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Kamal</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">JavaScript</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Solid Queue/Cache/Cable</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">ERB/HAML/Slim</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">SCSS & SASS</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">TailwindCSS</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal">Rust</li>
+              </ul>
+            </section>
+
+            <section class="mb-6 no-break-inside">
+              <div class="flex items-center mb-2.5">
+                <div class="h-[3px] w-5 bg-resume-blue mr-2"></div>
+                <h2 class="font-poppins font-bold text-resume-blue text-base">Programming Tools</h2>
+              </div>
+              <ul class="list-none p-0 m-0">
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Git/GitHub</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">SQLite</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">MySQL</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">PostgreSQL</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Redis</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">RediSearch</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Sidekiq</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Heroku</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal mb-1">Elasticsearch</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal">AWS</li>
+                <li class="font-poppins text-sm text-resume-gray-text leading-normal">Cloudflare</li>
+              </ul>
+            </section>
+          </div> <!-- End Left Column -->
+
+          <div class="pdf-page-column w-full md:w-3/4 order-2">
+            <div class="flex items-center mb-2">
+              <div class="h-[3px] w-[60px] bg-resume-blue mr-2"></div>
+              <h2 class="font-poppins font-bold text-resume-blue text-base">Work Experience</h2>
+            </div>
+
+            <div class="mb-5 no-break-inside">
+              <h2 class="font-poppins font-bold text-resume-blue text-3xl mb-1">
+                <a href="https://beehiiv.com" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-blue hover:text-resume-blue-light">beehiiv</a>
+              </h2>
+              <div class="flex flex-row sm:items-center mb-1 gap-2 font-medium text-sm">
+                <span class="font-poppins text-black">Senior Software Engineer</span>
+                <span>|</span>
+                <span class="font-poppins text-black">Mar 2025 - Present</span>
+              </div>
+              <ul class="list-disc pl-5 ml-1">
+                <li class="font-poppings text-base text-resume-gray-text mb-2 leading-relaxed">Improved the subscriber database by restructuring how custom subscriber data is stored, enabling publishers to more easily organize and segment audiences based on attributes like dates, numbers, text, booleans, and lists. This allowed for advanced subscriber targeting and significantly reduced query times.</li>
+              </ul>
+            </div>
+
+            <div class="mb-5 no-break-inside">
+              <h2 class="font-poppins font-bold text-resume-blue text-3xl mb-1"><a href="https://workingnotworking.com" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-blue hover:text-resume-blue-light">Working Not Working</a></h2>
+              <div class="flex flex-row sm:items-center mb-1 gap-2 font-medium text-sm">
+                <span class="font-poppins text-black">Senior Software Engineer</span>
+                <span>|</span>
+                <span class="font-poppins text-black">Apr 2022 - Feb 2025</span>
+              </div>
+              <ul class="list-disc pl-5 ml-1">
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Sole developer responsible for all aspects of development using Ruby on Rails, Turbo, and Stimulus, including AWS infrastructure, feature engineering, bug resolution, and performance optimization.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Developed NTRNL, an enterprise version of Working Not Working, built with Ruby on Rails, Turbo, and Stimulus, enabling companies to track and better utilize their internal talent with customizable features for each client.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Transitioned the deployment process from Capistrano to Kamal, and migrated our custom Cloudinary file upload solution to ActiveStorage integrated with R2. Implemented the Solid suite of database-backed adapters—Solid Cable and Solid Cache to replace Redis for Action Cable and caching functionalities—and swapped DelayedJob with Solid Queue for Active Job.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Collaborated with UI designers to reimagine the creative user sign-up process, introducing automatic pre-filling of images and videos for projects to streamline onboarding by scraping the users’ portfolio page.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Partnered with UI designers to overhaul the employer onboarding experience, simplifying job creation and introducing free and quarterly subscription tiers, each with different capabilities.</li>
+                <li class="font-poppins text-base text-resume-gray-text leading-relaxed">Built a cold outreach application in Ruby on Rails with SQLite, designed to automate lead generation for the platform. The app scraped job posting sites for specific job titles, evaluated fit for the platform using AI, identified hiring managers, and initiated contact through a sequence of email templates.</li>
+              </ul>
+            </div>
+
+            <div class="mb-5 no-break-inside">
+              <h2 class="font-poppins font-bold text-resume-blue text-3xl mb-1"><a href="https://n2pub.com" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-blue hover:text-resume-blue-light">N2 Publishing</a></h2>
+              <div class="flex flex-row sm:items-center mb-1 gap-2 font-medium text-sm">
+                <span class="font-poppins text-black">Senior Software Engineer</span>
+                <span>|</span>
+                <span class="font-poppins text-black">Sep 2015 - Apr 2019 — Dec 2019 - Apr 2022</span>
+              </div>
+
+              <ul class="list-disc pl-5 ml-1">
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Lead developer on a team that created a Rails application that tracks and progresses publications through the entire print process by utilizing digital press APIs until they are ultimately shipped to increase efficiency and gather insight. Worked with product managers to hone requirements, develop required tasks and sprints.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">A maintainer of a large, legacy, order entry and payment application that was built using Ruby on Rails in an Agile environment. Some of the larger features completed include refactoring how commissions are determined and displayed, scoping the application to handle different publication products with separate business rules and production schedules, refactoring the API for payment processing, analyzing and fixing performance issues. Some of my other responsibilities included reviewing, merging, and deploying code changes, and investigating bug tickets.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Developed and tested features for a new publication management system, that utilizes Ruby on Rails, which tracks publications' design status, aid communication between clients and ad designers, increase productivity, and decrease costs.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Created and maintained a Rails engine for managing single sign-on and off for all of N2’s distributed systems using SAML.</li>
+              </ul>
+            </div>
+
+            <div class="mb-5 no-break-inside">
+              <h2 class="font-poppins font-bold text-resume-blue text-3xl mb-1"><a href="https://www.spoonflower.com" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-blue hover:text-resume-blue-light">Spoonflower</a></h2>
+              <div class="flex flex-row sm:items-center mb-1 gap-2 font-medium text-sm">
+                <span class="font-poppins text-black">Senior Software Engineer</span>
+                <span>|</span>
+                <span class="font-poppins text-black">Apr 2019 - Dec 2019</span>
+              </div>
+
+              <ul class="list-disc pl-5 ml-1">
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Improved and resolved performance bottlenecks of a Rails API by using various techniques such as caching, removing n+1 queries, and refactorings which resulted in the average response time being reduced by an order of magnitude.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Led a team that refactored cart processing and order architecture in a Rails API to accommodate the launch of new product categories in the marketplace.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Consulted with project managers for feasibility to implement requested features to meet project deadlines.</li>
+                <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">Reviewed, merged, tested, and deployed code changes for a Rails 6 API and a Rails 3 application.</li>
+                <li class="font-poppins text-base text-resume-gray-text leading-relaxed">Investigated and resolved bug tickets from customers for a Rails 6 API and a Rails 3 application.</li>
+              </ul>
+            </div>
+
+            <section class="no-break-inside">
+              <div class="flex items-center mb-2">
+                <div class="h-[3px] w-[60px] bg-resume-blue mr-2"></div>
+                <h2 class="font-poppins font-bold text-resume-blue text-base">Education</h2>
+              </div>
+              <div class="mb-5">
+                <h2 class="font-poppins font-bold text-resume-blue text-3xl mb-1"><a href="https://www.calu.edu" target="_blank" rel="noopener noreferrer nofollow ugc" class="text-resume-blue hover:text-resume-blue-light">California University of Pennsylvania</a></h2>
+                <div class="flex flex-row sm:items-center mb-1 gap-2 font-medium text-sm">
+                  <span class="font-poppins text-black">Bachelor of Science in Computer Science</span>
+                  <span>|</span>
+                  <span class="font-poppins text-black">Aug 2011 - May 2015</span>
+                </div>
+                <ul class="list-disc pl-5 ml-1">
+                  <li class="font-poppins text-base text-resume-gray-text mb-2 leading-relaxed">4.0 GPA with minors in Mathematics and Chemistry</li>
+                  <li class="font-poppins text-base text-resume-gray-text leading-relaxed">Arthur and Millicent Gabriel Merit Award Recipient (outstanding grades in major and high moral standards)</li>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
