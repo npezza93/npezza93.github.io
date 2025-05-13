@@ -1,15 +1,15 @@
 GIT
   remote: https://github.com/npezza93/kamal.git
-  revision: dab276f58b1a0096bd8a1966de3fec0e45fc7f70
+  revision: 48f56b3cb662d08824c37b45dc17ab04fedfa660
   branch: local-docker-registry
   specs:
-    kamal (2.5.3)
+    kamal (2.6.0)
       activesupport (>= 7.0)
       base64 (~> 0.2)
       bcrypt_pbkdf (~> 1.0)
       concurrent-ruby (~> 1.2)
       dotenv (~> 3.1)
-      ed25519 (~> 1.2)
+      ed25519 (~> 1.4)
       net-ssh (~> 7.3)
       sshkit (>= 1.23.0, < 2.0)
       thor (~> 1.3)
@@ -36,10 +36,10 @@ GEM
     benchmark (0.4.0)
     bigdecimal (3.1.9)
     concurrent-ruby (1.3.5)
-    connection_pool (2.5.1)
+    connection_pool (2.5.3)
     dotenv (3.1.8)
     drb (2.2.1)
-    ed25519 (1.3.0)
+    ed25519 (1.4.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     kamal-skiff (0.2.0)
@@ -76,4 +76,4 @@ DEPENDENCIES
   kamal-skiff
 
 BUNDLED WITH
-   2.6.8
+   2.6.9
