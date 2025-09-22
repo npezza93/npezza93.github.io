@@ -2,7 +2,7 @@ service: portfolio
 image: npezza/portfolio
 
 servers:
-  - 5.161.249.108
+  - 192.168.4.216
 
 env:
   secret:
@@ -18,3 +18,7 @@ proxy:
   ssl: true
   host: pezza.co
   forward_headers: true
+
+ssh:
+  user: nick
+  port: 22
