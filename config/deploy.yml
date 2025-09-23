@@ -23,4 +23,4 @@ proxy:
 
 ssh:
   user: nick
-  proxy: cloudflared access ssh --hostname %h
+  proxy_command: cloudflared access ssh --hostname %h

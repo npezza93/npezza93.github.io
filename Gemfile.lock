@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/npezza93/kamal.git
-  revision: 69ca24269a6c87363b4d23ae860441e3b084c276
+  revision: bc1cbc35d01c815d8fdd05ed72943622f1de6d5c
   branch: local-docker-registry
   specs:
     kamal (2.7.0)
