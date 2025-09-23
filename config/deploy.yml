@@ -1,15 +1,17 @@
 service: portfolio
-image: npezza/portfolio
+retain_containers: 1
 
 servers:
-  - 192.168.4.216
+  web:
+    hosts:
+      - homelab.pezza.co
 
 env:
   secret:
     - GIT_URL
 
 registry:
-  server: "localhost:5555"
+  server: localhost:5555
 
 builder:
   arch: amd64
@@ -21,4 +23,4 @@ proxy:
 
 ssh:
   user: nick
-  port: 22
+  proxy: cloudflared access ssh --hostname %h
