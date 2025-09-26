@@ -17,6 +17,6 @@ builder:
   arch: amd64
 
 proxy:
-  ssl: true
+  ssl: false
   host: pezza.co
   forward_headers: true
