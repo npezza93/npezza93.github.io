@@ -4,7 +4,7 @@ retain_containers: 1
 servers:
   web:
     hosts:
-      - homelab.pezza.co
+      - 100.72.208.91
 
 env:
   secret:
@@ -20,7 +20,3 @@ proxy:
   ssl: true
   host: pezza.co
   forward_headers: true
-
-ssh:
-  user: nick
-  proxy_command: cloudflared access ssh --hostname %h
