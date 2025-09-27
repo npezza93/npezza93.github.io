@@ -6,10 +6,6 @@ servers:
     hosts:
       - 100.80.102.64
 
-env:
-  secret:
-    - GIT_URL
-
 registry:
   server: localhost:5555
 
