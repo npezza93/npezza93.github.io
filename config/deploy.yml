@@ -4,7 +4,7 @@ retain_containers: 1
 servers:
   web:
     hosts:
-      - 100.72.208.91
+      - 100.80.102.64
 
 env:
   secret:
