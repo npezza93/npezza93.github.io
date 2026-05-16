@@ -28,16 +28,23 @@
 
 .post-list {
   display: grid;
-  gap: 18px;
+  gap: 20px;
+  grid-template-columns: 1fr 1fr;
   margin: 45px auto 0;
   max-width: 950px;
+  @media (max-width: 725px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .post-card {
   border: 1px solid #ececec;
+  border-radius: 8px;
   color: #000;
-  display: block;
-  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
   text-decoration: none;
   transition: border-color 180ms ease, transform 180ms ease;
 }
@@ -57,10 +64,12 @@
 }
 
 .post-card h2 {
-  font-size: 2em;
+  font-size: 25px;
+  line-height: 1.25;
   letter-spacing: 0px;
-  margin: 12px 0;
+  margin: 0;
   font-weight: 400;
+  margin-bottom: 20px;
 }
 
 .post-page {
@@ -191,7 +200,7 @@
   }
 
   .post-card h2 {
-    font-size: 23px;
+    font-size: 22px;
   }
 
   .post-page {

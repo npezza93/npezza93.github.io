@@ -193,8 +193,8 @@ def render_homepage_include(posts)
   cards = posts.map do |post|
     <<~HTML
       <a class="post-card" href="#{post_url(post)}">
-        <div class="post-card-date">#{format_date(post.fetch("date"))}</div>
         <h2>#{CGI.escapeHTML(post.fetch("title"))}</h2>
+        <div class="post-card-date">#{format_date(post.fetch("date"))}</div>
       </a>
     HTML
   end.join

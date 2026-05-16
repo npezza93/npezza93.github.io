@@ -49,7 +49,7 @@ end
 ```
 
 This test suite has two tests, one checks that there are no completed tasks and the other tests completing a task. Let's run the suite a few times and see how our tests fair:
-```
+```bash
 ❯ ruby test/flaky_test.rb
 Run options: --seed 3199
 
@@ -76,19 +76,19 @@ Finished in 0.000956s, 2092.0506 runs/s, 2092.0506 assertions/s.
 2 runs, 2 assertions, 1 failures, 0 errors, 0 skips
 ```
 
-Sure enough, we have a flaky test. The first time running the suite everything passes but the second time it fails at `assert Task.total_completed.nil?`. 
+Sure enough, we have a flaky test. The first time running the suite everything passes but the second time it fails at `assert Task.total_completed.nil?`.
 
-Minitest runs all your tests in random order by default to help prevent tests from becoming order-dependent. In the above example, the test failure is caused because we neglected to reset the shared global state between tests. If `test_global_tracking` is run first, the suite will be green but if it is not, we will have a failure. Since this suite is small the bug is easy to spot but when your suite grows to have many test cases, it can become difficult to reproduce the exact scenario that produced the failure. 
+Minitest runs all your tests in random order by default to help prevent tests from becoming order-dependent. In the above example, the test failure is caused because we neglected to reset the shared global state between tests. If `test_global_tracking` is run first, the suite will be green but if it is not, we will have a failure. Since this suite is small the bug is easy to spot but when your suite grows to have many test cases, it can become difficult to reproduce the exact scenario that produced the failure.
 
 One crude method I've used over the years to debug this is changing the assertion into an `if`. Then upon failure call `pry` or `puts` the current state of things and then run the test suite inside an infinite loop on the command line until a failure triggers. This method is less than ideal for apps with large suites since it can become quite a time-consuming process to get just the right order.
- 
+
 
 `seed` to the rescue.
 
 
 You can use the `seed` value of failed run as a command line option to rerun your tests in that same order.
 
-```
+```bash
 ❯ ruby test/flaky_test.rb --seed 40573
 Run options: --seed 40573
 
