@@ -18,6 +18,16 @@ alias skiff="docker run -it --rm -v '${PWD}:/workdir' -v '/run/host-services/ssh
 
 Then run `skiff dev` to start the development server.
 
+## Posts
+
+Posts are stored as Markdown files in `content/posts`. To add or edit a post, update the Markdown file and regenerate the static HTML:
+
+```sh
+bin/generate_posts
+```
+
+The generator writes the homepage posts include to `public/_includes/posts.html` and individual post pages to `public/posts`.
+
 ## Deploying changes to production (or staging)
 
 Changes checked into git are automatically pulled onto the Skiff server every 10 seconds. So all you have to do is checkin your changes and push them.

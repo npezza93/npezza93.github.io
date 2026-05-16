@@ -1,0 +1,233 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "cgi"
+require "date"
+require "fileutils"
+require "json"
+require "yaml"
+
+ROOT = File.expand_path("..", __dir__)
+CONTENT_DIR = File.join(ROOT, "content", "posts")
+PUBLIC_DIR = File.join(ROOT, "public", "posts")
+INDEX_INCLUDE = File.join(ROOT, "public", "_includes", "posts.html")
+
+def import_devto_json!(dir)
+  Dir[File.join(dir, "devto-*.json")].each do |path|
+    article = JSON.parse(File.read(path))
+    frontmatter = {
+      "title" => article.fetch("title"),
+      "slug" => article.fetch("slug"),
+      "date" => Date.parse(article.fetch("published_at")).iso8601,
+      "description" => article["description"].to_s.strip,
+      "tags" => article.fetch("tag_list").is_a?(String) ? article.fetch("tag_list").split(",").map(&:strip) : article.fetch("tag_list"),
+      "reading_time_minutes" => article.fetch("reading_time_minutes"),
+      "dev_to_url" => article.fetch("url"),
+      "canonical_url" => article.fetch("canonical_url"),
+      "cover_image" => article["cover_image"]
+    }.compact
+
+    body = article.fetch("body_markdown").sub(/\A---\R.*?\R---\R/m, "").strip
+    destination = File.join(CONTENT_DIR, "#{frontmatter["date"]}-#{frontmatter["slug"]}.md")
+
+    File.write(destination, "#{frontmatter.to_yaml}---\n\n#{body}\n")
+  end
+end
+
+def parse_markdown_file(path)
+  source = File.read(path)
+  frontmatter, body = source.match(/\A---\R(.*?)\R---\R(.*)\z/m).captures
+  [YAML.safe_load(frontmatter, permitted_classes: [Date], aliases: false), body]
+end
+
+def inline_markdown(text)
+  escaped = CGI.escapeHTML(text)
+
+  escaped.gsub!(/!\[([^\]]*)\]\(([^)]+)\)/) do
+    alt = Regexp.last_match(1)
+    src = Regexp.last_match(2)
+    %(<img src="#{src}" alt="#{alt}">)
+  end
+
+  escaped.gsub!(/\[([^\]]+)\]\(([^)]+)\)/) do
+    label = Regexp.last_match(1)
+    href = Regexp.last_match(2)
+    %(<a href="#{href}">#{label}</a>)
+  end
+
+  escaped.gsub!(/`([^`]+)`/, '<code>\1</code>')
+  escaped.gsub!(/\*\*([^*]+)\*\*/, '<strong>\1</strong>')
+  escaped
+end
+
+def render_markdown(markdown)
+  html = +""
+  paragraph = []
+  unordered_list_items = []
+  ordered_list_items = []
+  code = nil
+  code_language = nil
+
+  flush_paragraph = lambda do
+    unless paragraph.empty?
+      html << "<p>#{inline_markdown(paragraph.join(" "))}</p>\n"
+      paragraph.clear
+    end
+  end
+
+  flush_list = lambda do
+    unless unordered_list_items.empty?
+      html << "<ul>\n"
+      unordered_list_items.each { |item| html << "<li>#{inline_markdown(item)}</li>\n" }
+      html << "</ul>\n"
+      unordered_list_items.clear
+    end
+
+    unless ordered_list_items.empty?
+      html << "<ol>\n"
+      ordered_list_items.each { |item| html << "<li>#{inline_markdown(item)}</li>\n" }
+      html << "</ol>\n"
+      ordered_list_items.clear
+    end
+  end
+
+  markdown.each_line do |line|
+    line = line.chomp
+
+    if code
+      if line.start_with?("```")
+        html << %(<pre><code class="language-#{CGI.escapeHTML(code_language.to_s)}">#{CGI.escapeHTML(code.join("\n"))}</code></pre>\n)
+        code = nil
+        code_language = nil
+      else
+        code << line
+      end
+      next
+    end
+
+    if (match = line.match(/\A```(\w+)?/))
+      flush_paragraph.call
+      flush_list.call
+      code = []
+      code_language = match[1]
+      next
+    end
+
+    if line.strip.empty?
+      flush_paragraph.call
+      flush_list.call
+      next
+    end
+
+    if (match = line.match(/\A###\s+(.+)\z/))
+      flush_paragraph.call
+      flush_list.call
+      html << "<h3>#{inline_markdown(match[1])}</h3>\n"
+    elsif (match = line.match(/\A##\s+(.+)\z/))
+      flush_paragraph.call
+      flush_list.call
+      html << "<h2>#{inline_markdown(match[1])}</h2>\n"
+    elsif (match = line.match(/\A#\s+(.+)\z/))
+      flush_paragraph.call
+      flush_list.call
+      html << "<h2>#{inline_markdown(match[1])}</h2>\n"
+    elsif (match = line.match(/\A[-*]\s+(.+)\z/))
+      flush_paragraph.call
+      ordered_list_items.clear
+      unordered_list_items << match[1]
+    elsif (match = line.match(/\A\d+\.\s+(.+)\z/))
+      flush_paragraph.call
+      unordered_list_items.clear
+      ordered_list_items << match[1]
+    elsif (match = line.match(/\A!\[([^\]]*)\]\(([^)]+)\)\z/))
+      flush_paragraph.call
+      flush_list.call
+      html << %(<figure><img src="#{match[2]}" alt="#{CGI.escapeHTML(match[1])}"></figure>\n)
+    elsif (match = line.match(/\A<img\s+.+>\z/))
+      flush_paragraph.call
+      flush_list.call
+      html << "<figure>#{match[0]}</figure>\n"
+    else
+      paragraph << line
+    end
+  end
+
+  flush_paragraph.call
+  flush_list.call
+  html
+end
+
+def post_url(post)
+  "/posts/#{post.fetch("slug")}"
+end
+
+def format_date(date)
+  Date.parse(date.to_s).strftime("%B %-d, %Y")
+end
+
+def render_post_page(post, body_html)
+  <<~HTML
+    <!--# set var="classes" value="post" -->
+    <!--# include file="/_includes/header.html" -->
+
+    <main class="post-page">
+      <a class="post-back" href="/#posts">Back</a>
+
+      <article class="post-article">
+        <header class="post-hero">
+          <h1>#{CGI.escapeHTML(post.fetch("title"))}</h1>
+        </header>
+
+        <div class="post-body">
+          <p class="post-byline">#{format_date(post.fetch("date"))}</p>
+          #{body_html}
+        </div>
+      </article>
+    </main>
+
+    <!--# include file="/_includes/footer.html" -->
+  HTML
+end
+
+def render_homepage_include(posts)
+  cards = posts.map do |post|
+    <<~HTML
+      <a class="post-card" href="#{post_url(post)}">
+        <div class="post-card-date">#{format_date(post.fetch("date"))}</div>
+        <h2>#{CGI.escapeHTML(post.fetch("title"))}</h2>
+      </a>
+    HTML
+  end.join
+
+  <<~HTML
+    <section id="posts">
+      <div class="posts-container">
+        <div class="header-container">
+          <h1 class="upcase section-header">
+            <span class="slash">#</span>
+            posts
+          </h1>
+        </div>
+        <div class="post-list">
+          #{cards}
+        </div>
+      </div>
+    </section>
+  HTML
+end
+
+import_index = ARGV.index("--import-devto-json")
+import_devto_json!(ARGV.fetch(import_index + 1)) if import_index
+
+FileUtils.mkdir_p(PUBLIC_DIR)
+
+posts = Dir[File.join(CONTENT_DIR, "*.md")].map do |path|
+  metadata, body = parse_markdown_file(path)
+  metadata.merge("body" => body)
+end.sort_by { |post| Date.parse(post.fetch("date").to_s) }.reverse
+
+posts.each do |post|
+  File.write(File.join(PUBLIC_DIR, "#{post.fetch("slug")}.html"), render_post_page(post, render_markdown(post.fetch("body"))))
+end
+
+File.write(INDEX_INCLUDE, render_homepage_include(posts))
