@@ -4,7 +4,7 @@ retain_containers: 1
 servers:
   web:
     hosts:
-      - 100.80.102.64
+      - 100.107.32.32
 
 registry:
   server: localhost:5555
