@@ -1,0 +1,127 @@
+<!--# set var="classes" value="post" -->
+<!--# include file="/_includes/header.html" -->
+
+<main class="post-page">
+  <a class="post-back" href="/#posts">Back</a>
+
+  <article class="post-article">
+    <header class="post-hero">
+      <h1>RediSearch on Rails</h1>
+    </header>
+
+    <div class="post-body">
+      <p class="post-byline">August 3, 2019</p>
+      <p>If you are using Rails, chances are you are using Redis for something whether it is as a cache, ActionCable, or ActiveJob. So why not use it for one more thing?</p>
+<p>Starting in v4 of Redis, Redis Modules were introduced which are add ons built to extend Redis&#39; functionality. One of the first modules was RediSearch, a text search engine built on top of Redis. According to <a href="https://redisearch.io">RediSearch.io</a>:</p>
+<p>&gt; Unlike other Redis search libraries, it does not use the internal data &gt; structures of Redis like sorted sets. Using its own highly optimized data &gt; structures and algorithms, it allows for advanced search features, high &gt; performance, and low memory footprint. It can perform simple text searches, as &gt; well as complex structured queries, filtering by numeric properties and &gt; geographical distances. RediSearch supports continuous indexing with no &gt; performance degradation, maintaining concurrent loads of querying and &gt; indexing. This makes it ideal for searching frequently updated databases, &gt; without the need for batch indexing and service interrupts. </p>
+<p>Some of the headline features of RediSearch include: </p>
+<p>    * Exact phrase matching.     * Stemming in many languages.     * Prefix queries.     * Optional, negative and union queries.</p>
+<ul>
+<li>Full-Text indexing of multiple fields in a document, including:</li>
+<li>Distributed search on billions of documents.</li>
+<li>Numeric property indexing.</li>
+<li>Geographical indexing and radius filters.</li>
+<li>Incremental indexing without performance loss.</li>
+<li>A powerful auto-complete engine with fuzzy matching.</li>
+<li>Concurrent low-latency insertion and updates of documents.</li>
+<li>This <a href="https://redislabs.com/blog/search-benchmarking-redisearch-vs-elasticsearch/">benchmark</a> against ElasticSearch!</li>
+</ul>
+<p>Let&#39;s walk through how to get RediSearch integrated into your Rails app!</p>
+<p>First, start out by installing Redis and RediSearch. Check out <a href="https://redis.io/download">Redis.io</a> for full installation instructions for Redis. If Homebrew is available you can <code>brew install redis</code>. As of v1.6, to build RediSearch do the following:</p>
+<ol>
+<li>git clone https://github.com/RediSearch/RediSearch.git</li>
+<li>cd RediSearch</li>
+<li>make</li>
+</ol>
+<p>Once RediSearch is built you will need to tell Redis to load the module. The best way is to add <code>loadmodule /path/to/redisearch.so</code> to your redis.conf file to always load the module. (On macOS the redis.conf file can be found at <code>/usr/local/etc/redis.conf</code>). Once the conf file has been updated restart Redis. For full instructions on installing RediSearch visit <a href="https://oss.redislabs.com/redisearch/Quick_Start.html">RediSearch.io</a>.</p>
+<p>Alternatively, you can run Redis and RediSearch with Docker using <code>docker run -p 6379:6379 redislabs/redisearch:latest</code>.</p>
+<p>Once Redis and RediSearch are installed add the <code>redi_search</code> gem to your Gemfile:</p>
+<pre><code class="language-ruby">gem &#39;redi_search&#39;</code></pre>
+<p>and then run <code>bundle install</code>. Or you can install from the <a href="https://github.com/npezza93/redi_search/packages/12707">GitHub package registry</a>. </p>
+<p>Once installed we&#39;ll need to make an initializer to configure our Redis connection.</p>
+<pre><code class="language-ruby"># config/initializers/redi_search.rb
+RediSearch.configure do |config|
+  config.redis_config = {
+    host: &quot;127.0.0.1&quot;,
+    port: &quot;6379&quot;
+  }
+end</code></pre>
+<p>Now that we have RediSearch available in our app, let&#39;s use it to index a model. We&#39;ll use a <code>User</code> model with <code>first</code> and <code>last</code> attributes as an example.</p>
+<pre><code class="language-ruby">class User &lt; ApplicationRecord
+  redi_search schema: {
+    first: { text: { phonetic: &quot;dm:en&quot; } },
+    last: { text: { phonetic: &quot;dm:en&quot; } }
+  }
+end</code></pre>
+<p>Calling the <code>redi_search</code> class method inside a model accepts one required named parameter called <code>schema</code>. This defines the fields inside an index and the attributes for those fields. RediSearch has text, numeric, geo, and tag fields. The phonetic option was passed above because we are indexing names and it makes it easier to search for names with similar sounds but spelled differently. The full list of available options for the different field types can be found <a href="https://github.com/npezza93/redi_search#schema">here</a>.</p>
+<pre><code class="language-ruby">User.reindex</code></pre>
+<p>Calling the <code>redi_search</code> class method inside a model adds a couple of useful methods, including <code>reindex</code> which does a couple of things:</p>
+<ol>
+<li>Creates the index if it doesn&#39;t exist</li>
+<li>Calls the <code>search_import</code> scope to fetch all the records from the database</li>
+<li>Converts those records to RediSearch <code>Document</code>s</li>
+<li>Indexes all those documents into Redis</li>
+</ol>
+<pre><code class="language-ruby">User.search(&quot;jak&quot;)</code></pre>
+<p>Now that we have all of our users indexed we can start searching for them. Querying is similar to the ActiveRecord interface where clauses and conditions can be chained together and the search is executed lazily​. Some simple queries are:</p>
+<pre><code class="language-ruby"># simple phrase query - jak AND daxter
+User.search(&quot;jak&quot;).and(&quot;daxter&quot;)
+
+# exact phrase query - jak FOLLOWED BY daxter
+User.search(&quot;jak daxter&quot;)
+
+# union query - jak OR daxter
+User.search(&quot;jak&quot;).or(&quot;daxter&quot;)
+
+# negation query - jak AND NOT daxter
+User.search(&quot;jak&quot;).and.not(&quot;daxter&quot;)</code></pre>
+<p>Some more complex queries are:</p>
+<pre><code class="language-ruby"># intersection of unions - (hello OR halo) AND (world OR werld)
+User.search(User.search(&quot;hello&quot;).or(&quot;halo&quot;)).and(User.search(&quot;world&quot;).or(&quot;werld&quot;))
+# negation of union - hello AND NOT (world or werld)
+User.search(&quot;hello&quot;).and.not(User.search(&quot;world&quot;).or(&quot;werld&quot;))
+# union inside phrase - hello AND (world OR werld)
+User.search(&quot;hello&quot;).and(User.search(&quot;world&quot;).or(&quot;werld&quot;))</code></pre>
+<p>All terms support a few options that can be applied.</p>
+<p><strong>Prefix terms</strong>: match all terms starting with a prefix. (Akin to <code>like term%</code> in SQL)</p>
+<pre><code class="language-ruby">User.search(&quot;hel&quot;, prefix: true)
+User.search(&quot;hello worl&quot;, prefix: true)
+User.search(&quot;hel&quot;, prefix: true).and(&quot;worl&quot;, prefix: true)
+User.search(&quot;hello&quot;).and.not(&quot;worl&quot;, prefix: true)</code></pre>
+<p><strong>Optional terms</strong>: documents containing the optional terms will rank higher than those without</p>
+<pre><code class="language-ruby">User.search(&quot;foo&quot;).and(&quot;bar&quot;, optional: true).and(&quot;baz&quot;, optional: true)</code></pre>
+<p><strong>Fuzzy terms</strong>: matches are performed based on Levenshtein distance. The maximum Levenshtein distance supported is 3.</p>
+<pre><code class="language-ruby">User.search(&quot;zuchini&quot;, fuzziness: 1)</code></pre>
+<p>Search terms can also be scoped to specific fields using a <code>where</code> clause:</p>
+<pre><code class="language-ruby"># Simple field specific query
+User.search.where(name: &quot;john&quot;)
+# Using where with options
+User.search.where(first: &quot;jon&quot;, fuzziness: 1)
+# Using where with more complex query
+User.search.where(first: User.search(&quot;bill&quot;).or(&quot;bob&quot;))</code></pre>
+<p>Searching for numeric fields accepts a range:</p>
+<pre><code class="language-ruby">User.search.where(number: 0..100)
+# Searching to infinity
+User.search.where(number: 0..Float::INFINITY)
+User.search.where(number: -Float::INFINITY..0)</code></pre>
+<p>When searching, by default a collection of <code>Document</code>s is returned. Calling <code>#results</code> on the search query will execute the search, and then look up all the found records in the database and return an ActiveRecord relation.</p>
+<p>Another useful method <code>redi_search</code> adds is <code>spellcheck</code> and responds with suggestions for misspelled search terms.</p>
+<pre><code class="language-ruby">User.spellcheck(&quot;jimy&quot;)
+  RediSearch (1.1ms)  FT.SPELLCHECK user_idx jimy DISTANCE 1
+=&gt; [#&lt;RediSearch::Spellcheck::Result:0x00007f805591c670
+    term: &quot;jimy&quot;,
+    suggestions:
+     [#&lt;struct RediSearch::Spellcheck::Suggestion score=0.0006849315068493151, suggestion=&quot;jimmy&quot;&gt;,
+      #&lt;struct RediSearch::Spellcheck::Suggestion score=0.00019569471624266145, suggestion=&quot;jim&quot;&gt;]&gt;]
+User.spellcheck(&quot;jimy&quot;, distance: 2).first.suggestions
+  RediSearch (0.5ms)  FT.SPELLCHECK user_idx jimy DISTANCE 2
+=&gt; [#&lt;struct RediSearch::Spellcheck::Suggestion score=0.0006849315068493151, suggestion=&quot;jimmy&quot;&gt;,
+ #&lt;struct RediSearch::Spellcheck::Suggestion score=0.00019569471624266145, suggestion=&quot;jim&quot;&gt;]</code></pre>
+<p>Next time you are looking for a search engine give RediSearch a try! You can read about more options and see more examples on the README:</p>
+<p>{% github npezza93/redi_search %}</p>
+
+    </div>
+  </article>
+</main>
+
+<!--# include file="/_includes/footer.html" -->

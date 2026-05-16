@@ -1,0 +1,274 @@
+<!--# set var="classes" value="post" -->
+<!--# include file="/_includes/header.html" -->
+
+<main class="post-page">
+  <a class="post-back" href="/#posts">Back</a>
+
+  <article class="post-article">
+    <header class="post-hero">
+      <h1>Dynamic nested forms with Turbo</h1>
+    </header>
+
+    <div class="post-body">
+      <p class="post-byline">June 4, 2022</p>
+      <p>Prior to the advent of Turbo and Stimulus, my go-to for creating dynamic nested forms was <a href="https://github.com/nathanvda/cocoon">Cocoon</a> which has been around a while and uses jQuery. Tried and true.</p>
+<p>Once Stimulus came out, <a href="https://github.com/excid3">Chris Oliver</a> from <a href="https://gorails.com/episodes/dynamic-nested-forms-with-stimulus-js?autoplay=1">GoRails</a> re-implemented Cocoons functionality using Stimulus. This iteration was simplified and removed the dependency on Cocoon and jQuery. </p>
+<p>Let&#39;s try a new implementation of dynamic nested forms without using any JavaScript!</p>
+<h3>Getting started </h3>
+<p>For this example, we&#39;ll make a checklist app that has projects and tasks. </p>
+<pre><code class="language-shell">rails new checklist
+cd checklist
+rails generate scaffold project description name
+rails generate model task description project:belongs_to
+rails db:migrate</code></pre>
+<p>To start, We need to update our <code>Project</code> model to accept attributes for tasks:</p>
+<pre><code class="language-ruby"># app/models/project.rb
+class Project &lt; ApplicationRecord
+  has_many :tasks
+  accepts_nested_attributes_for :tasks, 
+    reject_if: :all_blank, allow_destroy: true
+end</code></pre>
+<p>With <code>Project</code> aware of tasks, let&#39;s modify the <code>Project</code> form to render any associated <code>Task</code> fields.</p>
+<pre><code class="language-eruby">&lt;%# app/views/projects/_form.html.erb %&gt;
+&lt;%= form_with(model: project) do |form| %&gt;
+  &lt;% if project.errors.any? %&gt;
+    &lt;div style=&quot;color: red&quot;&gt;
+      &lt;h2&gt;&lt;%= pluralize(project.errors.count, &quot;error&quot;) %&gt; prohibited this project from being saved:&lt;/h2&gt;
+
+      &lt;ul&gt;
+        &lt;% project.errors.each do |error| %&gt;
+          &lt;li&gt;&lt;%= error.full_message %&gt;&lt;/li&gt;
+        &lt;% end %&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;% end %&gt;
+
+  &lt;div&gt;
+    &lt;%= form.label :name, style: &quot;display: block&quot; %&gt;
+    &lt;%= form.text_field :name %&gt;
+  &lt;/div&gt;
+
+  &lt;div&gt;
+    &lt;%= form.label :description, style: &quot;display: block&quot; %&gt;
+    &lt;%= form.text_field :description %&gt;
+  &lt;/div&gt;
+
+  &lt;h4&gt;Tasks&lt;/h4&gt;
+  &lt;div&gt;
+    &lt;%= form.fields_for :tasks do |task_form| %&gt;
+      &lt;%= task_form.hidden_field :id %&gt;
+
+      &lt;div&gt;
+        &lt;%= task_form.label :description, style: &quot;display: block&quot; %&gt;
+        &lt;%= task_form.text_field :description %&gt;
+      &lt;/div&gt;
+    &lt;% end %&gt;
+  &lt;/div&gt;
+
+  &lt;div&gt;
+    &lt;%= form.submit %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;</code></pre>
+<p>When we start up the rails server and go to <code>http://localhost:3000/projects/new</code>, no tasks get shown.  This is because, in our controller, when we instantiate a <code>Project</code>, we aren&#39;t building any associated <code>Task</code>s. We can change that by altering the <code>new</code> action in the <code>ProjectsController</code>. </p>
+<pre><code class="language-ruby"># app/controllers/projects_controller.rb
+class ProjectsController &lt; ApplicationController
+  [...]
+  def new
+    @project = Project.new(tasks: [Task.new])
+  end
+  [...]
+end</code></pre>
+<p>Once we reload the page, we now have see the fields for a <code>Task</code> being rendered.</p>
+<p>To successfully submit this form, though, we need to modify our permitted parameters in the <code>ProjectsController</code>.</p>
+<pre><code class="language-ruby"># app/controllers/projects_controller.rb
+class ProjectsController &lt; ApplicationController
+  [...]
+  private
+
+  def project_params
+    params.require(:project).
+      permit(:name, :description, tasks_attributes: 
+        [:id, :description, :_destroy])
+  end
+  [...]
+end</code></pre>
+<p>When we added <code>accepts_nested_attributes_for</code> in our <code>Project</code> model, it created a method <code>tasks_attributes=(attrs)</code> that takes in a hash of tasks that it can then use to construct <code>Task</code> objects. We&#39;ll dive more into the structure of the <code>attrs</code> hash in a bit. You can read more about <code>accepts_nested_attributes_for</code> <a href="https://api.rubyonrails.org/classes/ActiveRecord/NestedAttributes/ClassMethods.html">here</a>.</p>
+<p>Now when we submit this form, a new <code>Project</code> is created along with a new associated <code>Task</code>. </p>
+<p>Next, we&#39;ll move the form inputs for <code>Task</code>s into their own partial so we can reuse it later. </p>
+<pre><code class="language-eruby">&lt;%# app/views/tasks/_form.html.erb %&gt;
+&lt;%= form.hidden_field :id %&gt;
+
+&lt;div&gt;
+  &lt;%= form.label :description, style: &quot;display: block&quot; %&gt;
+  &lt;%= form.text_field :description %&gt;
+&lt;/div&gt;</code></pre>
+<p>While updating the <code>Project</code> form to use the new <code>Task</code> form partial we are also going to add an <code>id</code> to the surrounding <code>div</code> so that we can target it in the future with turbo streams.</p>
+<pre><code class="language-eruby">&lt;%# app/views/projects/_form.html.erb %&gt;
+[...]
+&lt;h4&gt;Tasks&lt;/h4&gt;
+&lt;div id=&quot;tasks&quot;&gt;
+  &lt;%= form.fields_for :tasks do |task_form| %&gt;
+    &lt;%= render &quot;tasks/form&quot;, form: task_form %&gt;
+  &lt;% end %&gt;
+&lt;/div&gt;
+[...]</code></pre>
+<h3>Child Index</h3>
+<p>Before going any further we have to understand how <code>fields_for</code> works, and how the <code>tasks_attributes=</code> method works.</p>
+<p>We&#39;ll take a look at <code>tasks_attributes=</code> first. </p>
+<p>Using the form submission parameters in our server log, we can see what the <code>tasks_attributes</code> parameter looks like. </p>
+<pre><code class="language-ruby">Parameters: {&quot;authenticity_token&quot;=&gt;&quot;[FILTERED]&quot;, &quot;project&quot;=&gt;
+{&quot;name&quot;=&gt;&quot;project 1&quot;, &quot;description&quot;=&gt;&quot;first project&quot;, 
+&quot;tasks_attributes&quot;=&gt;{&quot;0&quot;=&gt;{&quot;description&quot;=&gt;&quot;task 1&quot;}}}, 
+&quot;commit&quot;=&gt;&quot;Create Project&quot;}</code></pre>
+<p>You might be thinking &#39;What&#39;s up with that <code>&quot;0&quot;</code> key?&#39;. That is used as a way for Rails and Rack to uniquely identify each task in our form. When we are dynamically adding new tasks, they won&#39;t yet have database ids assigned to them so we need to assign them a temporary identifier to distinguish unique tasks sent to the server. In this case, <code>fields_for</code> uses a zero-based index.</p>
+<p>If we were to have two tasks on our form (you can do this by updating the <code>new</code> action in our <code>ProjectsController</code> to build two <code>Task</code>s on our <code>Project</code> instead of one) and submit the form you would see parameters that would look like:</p>
+<pre><code class="language-ruby">{ &quot;tasks_attributes&quot;=&gt;{&quot;0&quot;=&gt;{&quot;description&quot;=&gt;&quot;task 1&quot; }, 
+&quot;1&quot;=&gt;{&quot;description&quot;=&gt;&quot;task 2&quot; } } }</code></pre>
+<p>Let&#39;s move over to look at <code>fields_for</code> now.  Calling <code>f.fields_for :tasks do |task_form|</code> in our form will call the <code>tasks</code> method on <code>@project</code> and then loop through each <code>task</code> creating a scoped form builder. With the scoped form builder we can output the inputs for a <code>Task</code>. </p>
+<p>If we open our browser and inspect the tasks description text field we&#39;ll see it has a name of <code>project[tasks_attributes][0][description]</code>. For our <code>Project</code> fields the name looks something like <code>project[name]</code>. Calling <code>fields_for</code> will add the <code>[tasks_attributes]</code> scope and since Rails knows this is a <code>has_many</code> relationship it will add the index as another scope to uniquely identify specific tasks.</p>
+<p>We can alter this index by passing in a <code>child_index</code> parameter on <code>fields_for</code>. In our <code>Project</code>s form partial if we update our <code>fields_for</code> call to be <code>&lt;%= form.fields_for :tasks, child_index: &quot;FOOBAR&quot; do |task_form| %&gt;</code> and inspect our description field, the fields name is now, <code>project[tasks_attributes][FOOBAR][description]</code>.</p>
+<p>With this knowledge, we can better understand how past implementations of this trick were done. We would render the task form inputs out somewhere hidden on the page, with an easily identifying <code>child_index</code>. Then when we want to add a new task, we copy the template, <code>gsub</code> the <code>child_index</code> for a unique number, and then paste the template into the DOM tree. For removing, we would hide all the inputs, find the <code>_destroy</code> hidden input, and set it to true. </p>
+<p>Let&#39;s move on to adding the dynamic parts to our form. </p>
+<h3>Dynamically removing tasks</h3>
+<p>We&#39;ll start by wrapping the <code>Task</code>s form inputs in a <code>turbo_frame</code>.</p>
+<pre><code class="language-eruby">&lt;%= turbo_frame_tag &quot;task_#{form.index}&quot; do %&gt;
+  &lt;%= form.hidden_field :id %&gt;
+
+  &lt;div&gt;
+    &lt;%= form.label :description, style: &quot;display: block&quot; %&gt;
+    &lt;%= form.text_field :description %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;</code></pre>
+<p>Using the <code>child_index</code>(found by calling <code>index</code> on the form object) in the turbo_frame id allows us to manipulate the fields for just that <code>Task</code>.</p>
+<p>Next we are going to need a controller for <code>Task</code>s so that we can remove one. Unlike normal resourceful routes, the route for removing a task requires we pass it the <code>child_index</code> since it identifies the <code>turbo_frame</code> we want to target.  We also need an optionally id parameter because when we are editing a <code>Project</code> we might want to delete an existing <code>Task</code>, in which case, we will need to pass the database id back to the server so it knows which <code>Task</code> to destroy.</p>
+<pre><code class="language-ruby"># config/routes.rb
+Rails.application.routes.draw do
+  resources :projects
+
+  resources :tasks, only: [], param: :index do
+    member do
+      delete &#39;(:id)&#39; =&gt; &quot;tasks#destroy&quot;, as: &quot;&quot;
+    end
+  end
+end</code></pre>
+<p>This creates the route:</p>
+<pre><code class="language-">Prefix Verb   URI Pattern                   Controller#Action
+  task DELETE /tasks/:index(/:id)(.:format) tasks#destroy</code></pre>
+<p>In the controller we need to setup one <code>Project</code> and one <code>Task</code>.</p>
+<pre><code class="language-ruby"># app/controllers/tasks_controller.rb
+class TasksController &lt; ApplicationController
+  def destroy
+    @project = Project.new(tasks: [Task.new])
+  end
+end</code></pre>
+<p>A <code>Project</code> needs to be setup because we are going to recreate the form with different inputs.</p>
+<pre><code class="language-eruby">&lt;%# app/views/tasks/destroy.html.slim %&gt;
+&lt;%= fields model: @project do |form| %&gt;
+  &lt;%= form.fields_for :tasks, child_index: params[:index] do |task_form| %&gt;
+    &lt;%= turbo_frame_tag &quot;task_#{task_form.index}&quot; do %&gt;
+      &lt;%= task_form.hidden_field :id, value: params[:id] %&gt;
+      &lt;%= task_form.hidden_field :_destroy, value: true %&gt;
+    &lt;% end %&gt;
+  &lt;% end %&gt;
+&lt;% end %&gt;</code></pre>
+<p>This view recreates the <code>Project</code> form with a <code>Task</code> but this time there are a few differences. </p>
+<ol>
+<li>We are using the <code>fields</code> method rather than the <code>form_with</code> method because we don&#39;t need to render the actual HTML form element we just need a form builder instance. </li>
+<li>We pass the <code>index</code> param as the <code>child_index</code>. </li>
+<li>We change the form inputs in the turbo frame to be just the <code>id</code> and <code>_destroy</code> inputs.</li>
+</ol>
+<p>Now let&#39;s go back to the tasks <code>form</code> partial and add a button to trigger this. </p>
+<pre><code class="language-eruby">&lt;%# app/views/tasks/_form.html.erb %&gt;
+&lt;%= turbo_frame_tag &quot;task_#{form.index}&quot; do %&gt;
+  &lt;%= form.hidden_field :id %&gt;
+
+  &lt;div&gt;
+    &lt;%= form.label :description, style: &quot;display: block&quot; %&gt;
+    &lt;%= form.text_field :description %&gt;
+  &lt;/div&gt;
+
+  &lt;%= form.submit &quot;destroy task&quot;, 
+        formaction: task_path(form.index, form.object.id), 
+        formmethod: :delete, 
+        formnovalidate: true, 
+        data: { turbo_frame: &quot;task_#{form.index}&quot; } %&gt;
+&lt;% end %&gt;</code></pre>
+<p>Here we take advantage of the <code>formaction</code> and <code>formmethod</code> attribute of submit buttons inside the form to submit a <code>DELETE</code> request over to our destroy action of <code>Task</code>s, targeting this turbo frame. </p>
+<p>After reloading the page, clicking this button removes our task from the form! Hooray! Now on to adding tasks.</p>
+<h3>Dynamically adding tasks</h3>
+<p>Just like removing, let&#39;s add a new route:</p>
+<pre><code class="language-ruby"># config/routes.rb
+Rails.application.routes.draw do
+  resources :projects
+
+  resources :tasks, only: [], param: :index do
+    member do
+      delete &#39;(:id)&#39; =&gt; &quot;tasks#destroy&quot;, as: &quot;&quot;
+      post &#39;/&#39; =&gt; &quot;tasks#create&quot;
+    end
+  end
+end</code></pre>
+<p>Our new route looks like:</p>
+<pre><code class="language-">POST   /tasks/:index(.:format)       tasks#create</code></pre>
+<p>In this case, we don&#39;t have need the optional id parameter since this is always a brand new record.</p>
+<p>Now let&#39;s add a button on our <code>Project</code> form to add new tasks.</p>
+<pre><code class="language-eruby">&lt;%# app/views/projects/_form.html.erb %&gt;
+[...]
+&lt;h4&gt;Tasks&lt;/h4&gt;
+&lt;div id=&quot;tasks&quot;&gt;
+  &lt;%= form.fields_for :tasks do |task_form| %&gt;
+    &lt;%= render &quot;tasks/form&quot;, form: task_form %&gt;
+  &lt;% end %&gt;
+&lt;/div&gt;
+
+&lt;%= form.submit &quot;Add task&quot;, 
+      formaction: task_path(@project.tasks.size), 
+      formmethod: :post, 
+      formnovalidate: true, 
+      id: &quot;add-task&quot; %&gt;
+[...]</code></pre>
+<p>We need an <code>id</code> on our submit button so we can replace the <code>formaction</code> with an updated index when we add a new task to the form. </p>
+<p>Next, we&#39;ll move to our <code>TasksController</code> and setup our <code>new</code> method. Since it is going to be identical to our <code>destroy</code> method we can do some cleanup.</p>
+<pre><code class="language-ruby"># app/controllers/tasks_controller.rb
+class TasksController &lt; ApplicationController
+  before_action :setup_project
+
+  def new
+  end
+
+  def destroy
+  end
+
+  private
+
+  def setup_project
+    @project = Project.new(tasks: [Task.new])
+  end
+end</code></pre>
+<p>Now for our create template. In this case we are going to use a turbo_stream template.</p>
+<pre><code class="language-eruby">&lt;%# app/views/tasks/create.turbo_stream.erb %&gt;
+&lt;%= fields model: @project do |form| %&gt;
+  &lt;%= form.fields_for :tasks, child_index: params[:index] do |task_form| %&gt;
+    &lt;%= turbo_stream.replace &quot;add-task&quot; do %&gt;
+      &lt;%= form.submit &quot;Add task&quot;, 
+            formaction: task_path(task_form.index.to_i + 1), 
+            formmethod: :post, 
+            formnovalidate: true, 
+            id: &quot;add-task&quot; %&gt;
+    &lt;% end %&gt;
+
+    &lt;%= turbo_stream.append &quot;tasks&quot; do %&gt;
+      &lt;%= render &quot;form&quot;, form: task_form %&gt;
+    &lt;% end %&gt;
+  &lt;% end %&gt;
+&lt;% end %&gt;</code></pre>
+<p>The first stream replaces our <code>Add task</code> button with a new one that has a new <code>formaction</code> pointing to the next index. </p>
+<p>The second stream, appends to the <code>#tasks</code> element a new task form.</p>
+<p>If we reload the page and click the &quot;Add task&quot; button, BOOM! A new task is added to the form and we can then remove it. </p>
+<figure><img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yv06e93sto2w9jagdlo3.gif" alt="Demo"></figure>
+
+    </div>
+  </article>
+</main>
+
+<!--# include file="/_includes/footer.html" -->

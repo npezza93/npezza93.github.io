@@ -1,0 +1,88 @@
+<!--# set var="classes" value="post" -->
+<!--# include file="/_includes/header.html" -->
+
+<main class="post-page">
+  <a class="post-back" href="/#posts">Back</a>
+
+  <article class="post-article">
+    <header class="post-hero">
+      <h1>How to paginate items using Turbo</h1>
+    </header>
+
+    <div class="post-body">
+      <p class="post-byline">December 22, 2020</p>
+      <p>Basecamp recently released <a href="https://hotwire.dev">Hotwire</a> which includes <a href="https://turbo.hotwire.dev">Turbo</a>. Using Turbo, we can quickly paginate a long list of items that can be asynchronously loaded without any javascript.</p>
+<p>Let&#39;s say we have an app that lists credit card transactions. This list can become very long which we wouldn&#39;t want to load upfront due to the performance impact. To avoid loading all the transactions upon page load but, still allow our users to see all transactions, we will only render the first few transactions initially and then show a &quot;Load More&quot; link. The &quot;Load More&quot; link will grab more transactions, append them to the existing list of transactions, and then update our &quot;Load More&quot; link to point to a new URL for the next collection of transactions.</p>
+<p>(Note: We are going to use <a href="https://github.com/basecamp/geared_pagination">Geared Pagination</a> for pagination but this solution will work with any pagination solution so long as you know the current and next page numbers.) </p>
+<p>Here&#39;s where our app currently stands:</p>
+<figure><img src="https://user-images.githubusercontent.com/5059927/102933924-30768900-4471-11eb-968b-5dcce9025ef9.png" alt=""></figure>
+<pre><code class="language-ruby"># app/views/transactions_controller.rb
+class TransactionsController &lt; ApplicationController
+  def index
+    set_page_and_extract_portion_from(Transaction.all)
+
+    respond_to do |format|
+      format.html
+      format.js
+     end
+  end 
+end</code></pre>
+<pre><code class="language-erb">&lt;%# app/views/transactions/index.html.erb %&gt;
+&lt;p id=&quot;notice&quot;&gt;&lt;%= notice %&gt;&lt;/p&gt;
+&lt;div&gt;
+  &lt;%= link_to &#39;New Transaction&#39;, new_transaction_path %&gt;
+&lt;/div&gt;
+
+&lt;h1&gt;Transactions&lt;/h1&gt;
+
+&lt;div&gt;
+  &lt;ul&gt;&lt;%= render @page.records %&gt;&lt;/ul&gt;
+
+  &lt;% unless @page.last? %&gt;
+    &lt;%= link_to &quot;Load More&quot;, transactions_path(page: @page.next_param), remote: true, id: &quot;load-more&quot; %&gt;
+  &lt;% end %&gt;
+&lt;/div&gt;</code></pre>
+<pre><code class="language-erb">&lt;%# app/views/transactions/index.js.erb %&gt;
+document.querySelector(&quot;ul&quot;).insertAdjacentHTML(&quot;beforeend&quot;, &quot;&lt;%= j render partial: @page.records, as: :transaction %&gt;&quot;);
+
+&lt;% if @page.last? %&gt;
+  document.querySelector(&quot;#load-more&quot;).remove();
+&lt;% else %&gt;
+  document.querySelector(&quot;#load-more&quot;).href = &quot;&lt;%= transactions_path(page: @page.next_param) %&gt;&quot;;
+&lt;% end %&gt;</code></pre>
+<p>This solution works fine. Code is pretty concise and explicit, but we are using a separate js.erb view which we now also have to maintain along with the html.erb view for the index action.</p>
+<p>Using Turbo we can remove <code>app/views/transactions/index.js.erb</code> and the <code>respond_to</code> block in the controller since we will only be responding to HTML. </p>
+<p>In <code>app/views/transactions/index.html.erb</code> we will make the following changes inside the <code>ul</code> element:</p>
+<pre><code class="language-erb">&lt;ul&gt;
+  &lt;%= turbo_frame_tag &quot;transactions-#{@page.number}&quot; do %&gt;
+    &lt;%= render @page.records %&gt;
+    &lt;%= turbo_frame_tag &quot;transactions-#{@page.next_param}&quot; do %&gt;
+      &lt;% unless @page.last? %&gt;
+        &lt;%= link_to &quot;Load More&quot;, transactions_path(page: @page.next_param) %&gt;
+      &lt;% end %&gt;
+    &lt;% end %&gt;
+  &lt;% end %&gt;
+&lt;/ul&gt;</code></pre>
+<p>If we reload our page and try it out, it works!</p>
+<figure><img src="https://dev-to-uploads.s3.amazonaws.com/i/ekn81rysz8tzq50tnq5z.gif" alt="Screen Recording 2020-12-22 at 4.43.06 PM"></figure>
+<p>The trick to making this work is nesting the turbo-frames. On this first page, our outer frame has the id of <code>transactions-1</code> and the inner one has the id of <code>transactions-2</code>. When we click the &quot;Load More&quot; link the server is going to respond with the inner HTML of the <code>body</code> element of what page 2 looks like. In that case, our outer frame has the id of <code>transactions-2</code> and our inner one has the id of <code>transactions-3</code>. Once we get that response, Turbo will replace any frames that occur on the initial page <strong>and</strong> on the one sent back. </p>
+<p>Since the <code>transactions-1</code> <code>turbo-frame</code> doesn&#39;t appear on the second page, nothing happens to it. But there is a <code>transactions-2</code> <code>turbo-frame</code> on both our first and second pages so that frame is replaced. That new frame will render the <code>Transaction</code>&#39;s on the second page right below the first page&#39;s transactions, and remove the first page&#39;s &quot;Load More&quot; and replace it with a &quot;Load More&quot; link to the third page. Our HTML would end up looking something like:</p>
+<pre><code class="language-erb">&lt;ul&gt;
+  &lt;%= turbo_frame_tag &quot;transactions-1&quot; do %&gt;
+    &lt;%= render @page.records %&gt; &lt;%# page 1 records %&gt;
+    &lt;%= turbo_frame_tag &quot;transactions-2&quot; do %&gt;
+      &lt;%= render @page.records %&gt; &lt;%# page 2 records %&gt;
+      &lt;%= turbo_frame_tag &quot;transactions-3&quot; do %&gt;
+        &lt;%= link_to &quot;Load More&quot;, transactions_path(page: 3) %&gt;
+      &lt;% end %&gt;
+    &lt;% end %&gt;
+  &lt;% end %&gt;
+&lt;/ul&gt;</code></pre>
+<p>Magic 🪄!</p>
+<p>(Note: Styling could become an issue with this solution with elements being nested inside turbo-frame tags but so far I haven&#39;t run into any issues.)</p>
+
+    </div>
+  </article>
+</main>
+
+<!--# include file="/_includes/footer.html" -->

@@ -1,0 +1,107 @@
+<!--# set var="classes" value="post" -->
+<!--# include file="/_includes/header.html" -->
+
+<main class="post-page">
+  <a class="post-back" href="/#posts">Back</a>
+
+  <article class="post-article">
+    <header class="post-hero">
+      <h1>Using Minitest&#39;s seed value to track down order-dependent flaky tests</h1>
+    </header>
+
+    <div class="post-body">
+      <p class="post-byline">July 18, 2019</p>
+      <p>When you run your test suite, ever wonder why <code>--seed #####</code> gets outputted? Let&#39;s check it out and see how it&#39;s a useful debugging tool.</p>
+<p>We will start with a simple test suite:</p>
+<pre><code class="language-ruby">require &quot;minitest/autorun&quot;
+require &quot;redis&quot;
+
+class Task
+  class &lt;&lt; self
+    attr_accessor :total_completed
+  end
+
+  attr_accessor :completed
+
+  def complete
+    Task.total_completed ||= 0
+    Task.total_completed += 1
+    self.completed = true
+  end
+end
+
+class TaskTest &lt; Minitest::Test
+  def test_global_tracking
+    assert Task.total_completed.nil?
+  end
+
+  def test_complete
+    task = Task.new
+    task.complete
+    assert task.complete
+  end
+end</code></pre>
+<p>This test suite has two tests, one checks that there are no completed tasks and the other tests completing a task. Let&#39;s run the suite a few times and see how our tests fair:</p>
+<pre><code class="language-bash">❯ ruby test/flaky_test.rb
+Run options: --seed 3199
+
+# Running:
+
+..
+
+Finished in 0.000709s, 2820.8743 runs/s, 2820.8743 assertions/s.
+2 runs, 2 assertions, 0 failures, 0 errors, 0 skips
+
+❯ ruby test/flaky_test.rb
+Run options: --seed 40573
+
+# Running:
+
+.F
+
+Failure:
+TaskTest#test_global_tracking [test/flaky_test.rb:20]:
+Expected false to be truthy.
+
+
+Finished in 0.000956s, 2092.0506 runs/s, 2092.0506 assertions/s.
+2 runs, 2 assertions, 1 failures, 0 errors, 0 skips</code></pre>
+<p>Sure enough, we have a flaky test. The first time running the suite everything passes but the second time it fails at <code>assert Task.total_completed.nil?</code>. </p>
+<p>Minitest runs all your tests in random order by default to help prevent tests from becoming order-dependent. In the above example, the test failure is caused because we neglected to reset the shared global state between tests. If <code>test_global_tracking</code> is run first, the suite will be green but if it is not, we will have a failure. Since this suite is small the bug is easy to spot but when your suite grows to have many test cases, it can become difficult to reproduce the exact scenario that produced the failure. </p>
+<p>One crude method I&#39;ve used over the years to debug this is changing the assertion into an <code>if</code>. Then upon failure call <code>pry</code> or <code>puts</code> the current state of things and then run the test suite inside an infinite loop on the command line until a failure triggers. This method is less than ideal for apps with large suites since it can become quite a time-consuming process to get just the right order.</p>
+<p><code>seed</code> to the rescue.</p>
+<p>You can use the <code>seed</code> value of failed run as a command line option to rerun your tests in that same order.</p>
+<pre><code class="language-bash">❯ ruby test/flaky_test.rb --seed 40573
+Run options: --seed 40573
+
+# Running:
+
+.F
+
+Failure:
+TaskTest#test_global_tracking [test/flaky_test.rb:20]:
+Expected false to be truthy.
+
+Finished in 0.001082s, 1848.4287 runs/s, 1848.4287 assertions/s.
+2 runs, 2 assertions, 1 failures, 0 errors, 0 skips
+
+❯ ruby test/flaky_test.rb --seed 40573
+Run options: --seed 40573
+
+# Running:
+
+.F
+
+Failure:
+TaskTest#test_global_tracking [test/flaky_test.rb:20]:
+Expected false to be truthy.
+
+Finished in 0.001134s, 1763.6684 runs/s, 1763.6684 assertions/s.
+2 runs, 2 assertions, 1 failures, 0 errors, 0 skips</code></pre>
+<p>Whohoo 🎉! Now we can dive straight into debugging reliably and skip waiting for our test suite to be in just the right order.</p>
+
+    </div>
+  </article>
+</main>
+
+<!--# include file="/_includes/footer.html" -->
